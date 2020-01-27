@@ -29,11 +29,15 @@ def main():
     pollScore = 0 ## current week pollscore, written to file
     pollList = []
     scoreList = {}
+    teamID = 0
     
     for team in league.teams:
-        lastWeek = readScore(team.team_name, week)
+        lastWeek = readScore(team.team_id, week)
         weeklyScore = team.scores[int(week)]
+        if properties.debug == 't':
+            print('TeamID: ' + str(team.team_id))
         print("\n" + str(team.team_name) + "\n" +\
+            ##str(team.team_id) + 'Team ID\n' +\
             str(team.wins) + " wins\n" +\
             str(team.losses) + " losses\n" +\
             str(weeklyScore) + " weekly score\n")
@@ -48,8 +52,8 @@ def main():
         pollScore = (round((lastWeek*.5)+int(onlinePoll)*2+weeklyScore+((team.wins-team.losses)*10),2))
         if properties.debug == 't':
             print('pollScore = ' + str(pollScore) + '\n-----\n')
-        pollList.append((pollScore, team.team_name))
-        scoreList[team.team_name] = pollScore
+        pollList.append((pollScore, team.team_id))
+        scoreList[team.team_id] = pollScore
     ##write to file
     writeScores(scoreList, week)
     pollList.sort(reverse=True)
@@ -61,21 +65,22 @@ def main():
         line = str(rank) + ") "
         for x in pair:
             if i == 1:
-                print(line + pair[i] + " " + str(pair[i-1]))
+                team = League.get_team_data(league, x)
+                print(line + team.team_name + " " + str(pair[i-1]))
             i += 1
 
 def writeScores(scoreList, week):
     with open('week' + str(week) + '.txt', 'w') as json_file:
         json.dump(scoreList, json_file)
 
-def readScore(teamName, week):
+def readScore(teamID, week):
     if int(week) == 0:
         return 0
     else:
         try:
             with open('week' + str(int(week)-1) + '.txt') as j:
                 data = json.load(j)
-                score = data[teamName]
+                score = data[str(teamID)]
             if properties.debug == 't':
                 print('\nlast week score: ' + str(score))
             return score
