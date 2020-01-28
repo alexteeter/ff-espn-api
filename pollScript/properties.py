@@ -1,4 +1,5 @@
 ##properties
-year = 0 ##year goes here
-league = 0 ##leagueID goes here
+year = 2019
+league = 0
+private = True
 debug = ''
