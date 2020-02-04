@@ -7,10 +7,7 @@ import properties
 
 def main():
     checkNet()
-    if properties.private:
-        league = openLeague()
-    else:
-        league = openPublicLeague()
+    league = openLeague()
     week = getWeek()
     
     lastWeek = 0 ##last weeks poll points, will be gotten from file
@@ -21,17 +18,17 @@ def main():
     
     for team in league.teams:
         lastWeek = readScore(team.team_id, week)
-        weeklyScore = team.scores[int(week)]
-        if properties.debug == 't':
+        matchScore = team.scores[int(week)]
+        if properties.debug:
             print('TeamID: ' + str(team.team_id))
         print("\n" + str(team.team_name) + "\n" +\
-              str(team.wins) + " wins\n" +\
-              str(team.losses) + " losses\n" +\
-              str(weeklyScore) + " weekly score\n")
+              str(team.wins) + " Wins\n" +\
+              str(team.losses) + " Losses\n" +\
+              str(matchScore) + " Match Score\n")
         onlinePoll = getOnlinePoll()
         print('-')
-        pollScore = (round((lastWeek*.5)+int(onlinePoll)*2+weeklyScore+((team.wins-team.losses)*10),2))
-        if properties.debug == 't':
+        pollScore = (round((lastWeek*.5)+int(onlinePoll)*2+matchScore+((team.wins-team.losses)*10),2))
+        if properties.debug:
             print('pollScore = ' + str(pollScore) + '\n-----\n')
         pollList.append((pollScore, team.team_id))
         scoreList[team.team_id] = pollScore
@@ -52,7 +49,7 @@ def readScore(teamID, week):
             with open('week' + str(int(week)-1) + '.txt') as j:
                 data = json.load(j)
                 score = data[str(teamID)]
-            if properties.debug == 't':
+            if properties.debug:
                 print('\nlast week score: ' + str(score))
             return score
         except:
@@ -70,26 +67,20 @@ def checkNet():
     print('Success!')
     os.system('cls')
 def openLeague():
-    try:
-        user = input('Enter username: ')
-        password = getpass('Enter password: ')
-        print('Loading league...')
-        league = League(properties.league, properties.year, username=user, password=password)
+    try: 
+        if properties.private:
+            user = input('Enter username: ')
+            password = getpass('Enter password: ')
+            print('Loading league...')
+            league = League(properties.league, properties.year, username=user, password=password)
+        else:
+            print('Loading league...')
+            league = League(properties.league, properties.year)
         os.system('cls')
         print('League loaded!\n-------------------------------\n\n')
         return league
     except:
         exceptCont('')
-
-def openPublicLeague():
-    try:
-        print('Loading league...')
-        league = League(properties.league, properties.year)
-        os.system('cls')
-        print('League loaded!\n-------------------------------\n\n')
-        return league
-    except:
-        exceptCont('Failed to load league: Is league private? (Check properties!)')  
 
 def printList(list, league):
     print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")

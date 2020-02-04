@@ -2,4 +2,4 @@
 year = 2019
 league = 0
 private = True
-debug = ''
+debug = False
