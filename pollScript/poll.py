@@ -4,8 +4,10 @@ from urllib import request
 import os
 import json
 import properties
+import pyfiglet
 
 def main():
+    printHeader()
     checkNet()
     league = openLeague()
     week = getWeek()
@@ -14,7 +16,6 @@ def main():
     pollScore = 0 ## current week pollscore, written to file
     pollList = []
     scoreList = {}
-    teamID = 0
     
     for team in league.teams:
         lastWeek = readScore(team.team_id, week)
@@ -66,6 +67,7 @@ def checkNet():
                    'Check network connection before trying again.')
     print('Success!')
     os.system('cls')
+    printHeader()
 def openLeague():
     try: 
         if properties.private:
@@ -77,6 +79,7 @@ def openLeague():
             print('Loading league...')
             league = League(properties.league, properties.year)
         os.system('cls')
+        printHeader()
         print('League loaded!\n-------------------------------\n\n')
         return league
     except:
@@ -122,5 +125,8 @@ def exceptCont(message):
         main()
     else:
         exit()
+
+def printHeader():
+    print(pyfiglet.figlet_format("PowerPoll 2020"))
 
 main()
